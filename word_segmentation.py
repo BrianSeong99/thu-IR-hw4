@@ -3,10 +3,10 @@ import os
 import thulac
 
 class SegProcessor:
-  def __init__(self, segmentation_limit=SEGMENTATION_LIMIT):
+  def __init__(self, segmentation_limit=LIMIT, training=False):
+    self.training = training
     self.segmentation_limit = segmentation_limit
     self.file_loader()
-
 
   def file_loader(self):
     lac = thulac.thulac(seg_only=True)
@@ -33,7 +33,7 @@ class SegProcessor:
               # print(segmented)
               print("\r", str(line_count), " lines", end="", flush=True)
               line_count = line_count + 1
-              if line_count > self.segmentation_limit:
+              if line_count > self.segmentation_limit and not self.training:
                 f.close()
                 break
               line = f.readline()
@@ -47,7 +47,7 @@ class SegProcessor:
               # print(segmented)
               print("\r", str(line_count), " lines", end="", flush=True)
               line_count = line_count + 1
-              if line_count > self.segmentation_limit:
+              if line_count > self.segmentation_limit and not self.training:
                 f.close()
                 break
               line = f.readline()

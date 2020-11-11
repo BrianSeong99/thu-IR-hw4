@@ -1,8 +1,9 @@
-from flask import Flask
 import argparse
+import time
+from flask import Flask
+from config import *
 from word_segmentation import SegProcessor
 from indexer import Indexer
-import time
 
 
 
@@ -21,13 +22,24 @@ if __name__ == '__main__':
                         help="This argument is to choose whether you want to run segmentation on corpus or not. If specified, the segmenting will be executed.")
    parser.add_argument("-i", "--indexing",  action="store_true", default=False, dest="indexing",
                         help="This argument is to choose whether you want to run the indexing or not. If specified, then indexing will be executed.")
+   parser.add_argument("-t", "--training",  action="store_true", default=False, dest="training",
+                        help="This argument is to choose whether you want to process all data to train the result or not. If specified, then training of all data will be executed.")
+   parser.add_argument("-l", "--limit", type=int, default=100, dest="limit", help="This argument is to set the limits of both indexing and segmenting")
    opts = parser.parse_args()
+
+   training = False
+
+   if opts.training:
+      print()
+      print("Training Mode On, All data will be segmented and indexed")
+      print()
+      training = True
 
    if opts.segmenting:
       print()
       print("==========SEGMENTATION==========")
       start = time.time()
-      SegProcessor()
+      SegProcessor(segmentation_limit=opts.limit, training=training)
       end = time.time()
       print("Segmentation Time Cost: {}s".format(end-start))
       print("==========SEGMENTATION==========")
@@ -36,7 +48,10 @@ if __name__ == '__main__':
    if opts.indexing:
       print()
       print("==========INDEXING==========")
-      Indexer()
+      start = time.time()
+      Indexer(index_limit=opts.limit, training=training)
+      end = time.time()
+      print("Indexing Time Cost: {}s".format(end-start))
       print("==========INDEXING==========")
       print()
 
