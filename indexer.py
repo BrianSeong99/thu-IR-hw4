@@ -30,6 +30,7 @@ class Indexer:
     self.Indexing(index_writer)
   
   def Indexing(self, writer):
+    print("Indexing Segmented File [", SEGMENTATION_FILE, "]")
     with open(SEGMENTATION_FILE, 'r') as f:
       line_count = 0
       for line in f:
@@ -43,9 +44,10 @@ class Indexer:
 
         writer.addDocument(doc)
 
-        print("\r", str(line_count), end="", flush=True)
+        print("\r", str(line_count), " lines", end="", flush=True)
         line_count = line_count + 1
         if line_count > self.index_limit and not self.training:
           break
 
     writer.close()
+    print()

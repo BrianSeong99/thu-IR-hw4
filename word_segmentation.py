@@ -15,7 +15,7 @@ class SegProcessor:
         if file_name == ".DS_Store":
           continue
         with open(CORPUS_DIR + file_name, "r") as f:
-          print("Segmenting File [", file_name, "]")
+          print("Segmenting File [", CORPUS_DIR+file_name, "]")
           if "Sogou" in file_name:
             line_count = 0
             line = f.readline()
