@@ -7,6 +7,7 @@ class SegProcessor:
     self.segmentation_limit = segmentation_limit
     self.file_loader()
 
+
   def file_loader(self):
     lac = thulac.thulac(seg_only=True)
     with open(SEGMENTATION_FILE, 'w') as outfile:

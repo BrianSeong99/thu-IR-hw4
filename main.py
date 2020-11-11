@@ -1,6 +1,9 @@
 from flask import Flask
 import argparse
 from word_segmentation import SegProcessor
+from indexer import Indexer
+import time
+
 
 
 app = Flask(__name__)
@@ -21,10 +24,21 @@ if __name__ == '__main__':
    opts = parser.parse_args()
 
    if opts.segmenting:
+      print()
+      print("==========SEGMENTATION==========")
+      start = time.time()
       SegProcessor()
+      end = time.time()
+      print("Segmentation Time Cost: {}s".format(end-start))
+      print("==========SEGMENTATION==========")
+      print()
 
    if opts.indexing:
+      print()
+      print("==========INDEXING==========")
       Indexer()
+      print("==========INDEXING==========")
+      print()
 
       # app.run()
 
