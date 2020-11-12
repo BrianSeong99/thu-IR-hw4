@@ -16,6 +16,8 @@ def hello_world():
 def search_query():
    query = request.args.get('query')
    print(query)
+   restriction = 2 if request.args.get('restriction') is '' else int(request.args.get('restriction'))
+   result = retriever.search(query, restriction)
 
 if __name__ == '__main__':
 
@@ -62,7 +64,8 @@ if __name__ == '__main__':
    if opts.startapp:
       print()
       print("==========STARTAPP==========")
-      Retriever()
+      global retriever
+      retriever = Retriever()
       app.run()
       print()
 

@@ -18,8 +18,15 @@ class Retriever:
     self.searcher= IndexSearcher(self.reader)
     self.lac = thulac.thulac()
   
+  def attachCurrentThread(self):
+    vm_env = lucene.getVMEnv()
+    vm_env.attachCurrentThread()
+    return vm_env
+
   def search(self, query_str, restriction=2):
-    my_query = QueryParser(Version.LUCENE_CURRENT, "context", self.analyzer).parse(query_str)
+    self.attachCurrentThread()
+
+    my_query = QueryParser("context", self.analyzer).parse(query_str)
     total_hits = self.searcher.search(my_query, MAX)
 
     result_context = []
