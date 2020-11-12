@@ -34,13 +34,19 @@ class Indexer:
     with open(SEGMENTATION_FILE, 'r') as f:
       line_count = 0
       for line in f:
-        fieldtype = FieldType()
-        fieldtype.setIndexOptions(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS)
-        fieldtype.setStored(True)
-        fieldtype.setTokenized(True)
+        fieldtype_context = FieldType()
+        fieldtype_context.setIndexOptions(IndexOptions.DOCS_AND_FREQS)
+        fieldtype_context.setStored(True)
+        fieldtype_context.setTokenized(True)
+
+        fieldtype_phrase = FieldType()
+        fieldtype_phrase.setIndexOptions(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS)
+        fieldtype_phrase.setStored(True)
+        fieldtype_phrase.setTokenized(True)
 
         doc = Document()
-        doc.add(Field('context', line, fieldtype))
+        doc.add(Field('context', line, fieldtype_context))
+        doc.add(Field('phrase', line, fieldtype_phrase))
 
         writer.addDocument(doc)
 
