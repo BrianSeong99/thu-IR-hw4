@@ -9,7 +9,7 @@ class SegProcessor:
     self.file_loader()
 
   def file_loader(self):
-    lac = thulac.thulac(seg_only=True)
+    lac = thulac.thulac()
     with open(SEGMENTATION_FILE, 'w') as outfile:
       for file_name in os.listdir(CORPUS_DIR):
         if file_name == ".DS_Store":
