@@ -1,6 +1,6 @@
 import argparse
 import time
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, url_for, redirect
 from config import *
 from word_segmentation import SegProcessor
 from indexer import Indexer
@@ -9,16 +9,21 @@ from retriever import Retriever
 app = Flask(__name__)
 
 @app.route('/')
-def hello_world():
-   return ("Hello World")
+def hello():
+   return redirect(url_for('home'))
 
-@app.route('/search', methods=['POST'])
+@app.route('/home')
+def home():
+	return render_template('home.html')
+
+@app.route('/search', methods=['GET'])
 def search_query():
+   start = time.time()
    query = request.args.get('query')
    restriction = 2 if request.args.get('restriction') is '' else int(request.args.get('restriction'))
    result = retriever.search(query, restriction)
-   print(len(result))
-   return render_template('result.html', hits=result)
+   end = time.time()
+   return render_template('result.html', hits=result, time_cost=end-start, number_of_hits=len(result))
 
 if __name__ == '__main__':
 
