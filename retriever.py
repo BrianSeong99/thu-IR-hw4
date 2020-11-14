@@ -69,16 +69,12 @@ class Retriever:
   def search_terms(self, parsed_query):
     print(".....search_terms")
     total_hits = self.searcher.search(parsed_query, MAX)
-    print(len(total_hits.scoreDocs))
     result_contexts = []
     for hit in total_hits.scoreDocs:
-      print(hit.score)
-      print(hit)
       doc = self.searcher.doc(hit.doc)
       context = doc.get('context')
       result_contexts.append(context)
     
-    print(result_contexts)
     return result_contexts
 
   def search(self, query_str, restriction=2):

@@ -47,8 +47,10 @@ class Indexer:
         processed_context, processed_phrase = self.process_line(line)
 
         doc = Document()
-        doc.add(Field('context', line, fieldtype_context))
+        doc.add(Field('context', processed_context, fieldtype_context))
         doc.add(Field('phrase', processed_phrase, fieldtype_phrase))
+
+        # print()
 
         writer.addDocument(doc)
 
@@ -67,7 +69,7 @@ class Indexer:
     for index, term in enumerate(terms):
       splitted = term.split('_')
       if len(splitted) > 1:
-        processed_context.append(term)
+        processed_context.append(splitted[0])
         processed_phrase.append(splitted[1])
 
     return ' '.join(processed_context), ' '.join(processed_phrase)
