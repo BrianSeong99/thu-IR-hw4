@@ -31,32 +31,54 @@ class Retriever:
     return vm_env
 
   def search_phrases(self, query_str):
-    # phrase_exist = True
-    context_phrase = []
+    print(".....search_phrases")
+    queries = []
+    query_phrases = []
     query_terms = query_str.split()
     for term in query_terms:
       if '/' in term:
         cutted_term = term.split('/')
-        context_phrase.append(cutted_term)
+        queries.append(cutted_term[0])
+        query_phrases.append(cutted_term[1])
       else:
-        context_phrase.append([term, ''])
+        queries.append(term)
+        query_phrases.append('')
       # else:
       #   cutted = self.lac.cut(term, text=False)
       #   for cutted_term in cutted:
       #     phrase.append(cutted_term)
-    print(context_phrase)
-
-  def search_terms(self, query_str):
-    parsed_query = QueryParser("context", self.analyzer).parse(query_str)
+    parsed_query = QueryParser("context", self.analyzer).parse(' '.join(queries))
     total_hits = self.searcher.search(parsed_query, MAX)
     result_contexts = []
     for hit in total_hits.scoreDocs:
-      # print(hit.score)
-      # print(hit)
       doc = self.searcher.doc(hit.doc)
-      context = doc.get("context")
+      terms = (doc.get("context")).split(" ")
+      phrases = (doc.get("phrase")).split(" ")
+      flag = True
+      for index, term in enumerate(terms):
+        if term in query_terms:
+          i = query_terms.index(term)
+          if query_phrases[i] != phrases[index]:
+            flag = False
+            break
+      if flag:
+        result_contexts.append(''.join(terms))
+    
+    return result_contexts, parsed_query
+
+  def search_terms(self, parsed_query):
+    print(".....search_terms")
+    total_hits = self.searcher.search(parsed_query, MAX)
+    print(len(total_hits.scoreDocs))
+    result_contexts = []
+    for hit in total_hits.scoreDocs:
+      print(hit.score)
+      print(hit)
+      doc = self.searcher.doc(hit.doc)
+      context = doc.get('context')
       result_contexts.append(context)
     
+    print(result_contexts)
     return result_contexts
 
   def search(self, query_str, restriction=2):
@@ -67,7 +89,7 @@ class Retriever:
     if '/' in query_str:
       result_contexts, parsed_query = self.search_phrases(query_str)
     else:
-      result_contexts = self.search_terms(query_str)
+      result_contexts = self.search_terms(parsed_query)
     
     self.recover_to_article(query_str, result_contexts, restriction)
 
