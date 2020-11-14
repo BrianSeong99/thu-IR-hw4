@@ -1,6 +1,6 @@
 import argparse
 import time
-from flask import Flask, request
+from flask import Flask, request, render_template
 from config import *
 from word_segmentation import SegProcessor
 from indexer import Indexer
@@ -15,9 +15,10 @@ def hello_world():
 @app.route('/search', methods=['POST'])
 def search_query():
    query = request.args.get('query')
-   print(query)
    restriction = 2 if request.args.get('restriction') is '' else int(request.args.get('restriction'))
    result = retriever.search(query, restriction)
+   print(len(result))
+   return render_template('result.html', hits=result)
 
 if __name__ == '__main__':
 
@@ -66,6 +67,7 @@ if __name__ == '__main__':
       print("==========STARTAPP==========")
       global retriever
       retriever = Retriever()
+      # app.debug = True
       app.run()
       print()
 
