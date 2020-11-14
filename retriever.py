@@ -55,9 +55,10 @@ class Retriever:
       terms = (doc.get("context")).split(" ")
       phrases = (doc.get("phrase")).split(" ")
       flag = True
+
       for index, term in enumerate(terms):
-        if term in query_terms:
-          i = query_terms.index(term)
+        if term in queries:
+          i = queries.index(term)
           if query_phrases[i] != phrases[index]:
             flag = False
             break
