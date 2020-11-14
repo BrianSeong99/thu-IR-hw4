@@ -21,7 +21,9 @@ def search_query():
    start = time.time()
    query = request.args.get('query')
    restriction = 2 if request.args.get('restriction') is '' else int(request.args.get('restriction'))
+   print("here in search")
    result = retriever.search(query, restriction)
+   print("finished search")
    end = time.time()
    return render_template('result.html', hits=result, time_cost=end-start, number_of_hits=len(result))
 
@@ -76,8 +78,3 @@ if __name__ == '__main__':
       app.run()
       print()
 
-
-'''
-   vm_env = lucene.getVMEnv()
-   vm_env.attachCurrentThread()
-'''

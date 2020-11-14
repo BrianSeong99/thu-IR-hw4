@@ -30,12 +30,25 @@ class Retriever:
     vm_env.attachCurrentThread()
     return vm_env
 
-  def search(self, query_str, restriction=2):
-    self.attachCurrentThread()
+  def search_phrases(self, query_str):
+    # phrase_exist = True
+    context_phrase = []
+    query_terms = query_str.split()
+    for term in query_terms:
+      if '/' in term:
+        cutted_term = term.split('/')
+        context_phrase.append(cutted_term)
+      else:
+        context_phrase.append([term, ''])
+      # else:
+      #   cutted = self.lac.cut(term, text=False)
+      #   for cutted_term in cutted:
+      #     phrase.append(cutted_term)
+    print(context_phrase)
 
-    my_query = QueryParser("context", self.analyzer).parse(query_str)
-    total_hits = self.searcher.search(my_query, MAX)
-
+  def search_terms(self, query_str):
+    parsed_query = QueryParser("context", self.analyzer).parse(query_str)
+    total_hits = self.searcher.search(parsed_query, MAX)
     result_contexts = []
     for hit in total_hits.scoreDocs:
       # print(hit.score)
@@ -43,14 +56,25 @@ class Retriever:
       doc = self.searcher.doc(hit.doc)
       context = doc.get("context")
       result_contexts.append(context)
-    # print(result_contexts)
-  
+    
+    return result_contexts
+
+  def search(self, query_str, restriction=2):
+    self.attachCurrentThread()
+
+    parsed_query = QueryParser("context", self.analyzer).parse(query_str)
+    result_contexts = []
+    if '/' in query_str:
+      result_contexts, parsed_query = self.search_phrases(query_str)
+    else:
+      result_contexts = self.search_terms(query_str)
+    
     self.recover_to_article(query_str, result_contexts, restriction)
 
     final_result = []
     simpleHTMLFormatter = SimpleHTMLFormatter(u"<b><font color='red'>", u"</font></b>")
     for hit in self.recovered_hits:
-      highlighter = Highlighter(simpleHTMLFormatter, QueryScorer(my_query))
+      highlighter = Highlighter(simpleHTMLFormatter, QueryScorer(parsed_query))
       highLightText = highlighter.getBestFragment(self.analyzer, 'context', hit)
       if highLightText is not None:
         final_result.append(highLightText)
