@@ -74,7 +74,7 @@ class Retriever:
       if flag:
         result_contexts.append([' '.join(terms), hit.score])
     
-    return result_contexts, parsed_query
+    return result_contexts
 
   # 当用户搜索的query中没有词性时
   def search_terms(self, parsed_query):
@@ -94,15 +94,14 @@ class Retriever:
     self.attachCurrentThread()
 
     # 对query进行解析
-    parsed_query = QueryParser("context", self.analyzer).parse(query_str)
     result_contexts = []
     # 根据有没有‘/’判断有没有词性，
     if '/' in query_str:
       # 有词性就转到search_phrases
-      result_contexts, parsed_query = self.search_phrases(query_str)
+      result_contexts = self.search_phrases(query_str)
     else:
       # 有词性就转到search_terms
-      result_contexts = self.search_terms(parsed_query)
+      result_contexts = self.search_terms(QueryParser("context", self.analyzer).parse(query_str))
     
     # 将搜索结果复原为文章返回
     self.recover_to_article(query_str, result_contexts, restriction)
@@ -112,11 +111,12 @@ class Retriever:
     simpleHTMLFormatter = SimpleHTMLFormatter(u"<b><font color='red'>", u"</font></b>")
     for index, recovered_query in enumerate(self.recovered_queries):
       # 不是直接拿用户输入的query来进行高亮处理，而是通过我们自己处理好的包含了位置约束的query进行高亮处理
+      recovered_query = recovered_query.replace("/", ",")
       highlighter = Highlighter(simpleHTMLFormatter, QueryScorer(QueryParser("context", self.analyzer).parse(recovered_query)))
       highLightText = highlighter.getBestFragment(self.analyzer, 'context', self.recovered_contexts[index])
       if highLightText is not None:
         final_result.append(highLightText)
-    
+
     return final_result
 
   # 将搜索结果复原为文章返回
@@ -141,6 +141,13 @@ class Retriever:
             self.recovered_queries.append(tmp_matched_query)
             # 添加检索到的文段内容
             self.recovered_contexts.append(joined)
+          # 多检索词语的情况下
+          else:
+            index = self.recovered_contexts.index(joined)
+            # 位置约束处理
+            tmp_matched_query = self.get_restriction_query(terms, length, matched_index, restriction)
+            # 添加位置约束处理过后的query
+            self.recovered_queries[index] += tmp_matched_query
   
   # 位置拘束
   def get_restriction_query(self, terms, term_length, matched_index, restriction):

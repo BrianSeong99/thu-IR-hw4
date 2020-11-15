@@ -10,14 +10,6 @@
 
 # 实验过程
 
-[1 分词标注](#1)
-
-[2 索引建立](#2)
-
-[3 信息检索](#3)
-
-
-
 # <span id="1">1 分词标注</span>
 
 ## 1-1 分词实现
@@ -435,6 +427,13 @@ class Retriever:
             self.recovered_queries.append(tmp_matched_query)
             # 添加检索到的文段内容
             self.recovered_contexts.append(joined)
+          # 多检索词语的情况下
+          else:
+            index = self.recovered_contexts.index(joined)
+            # 位置约束处理
+            tmp_matched_query = self.get_restriction_query(terms, length, matched_index, restriction)
+            # 添加位置约束处理过后的query
+            self.recovered_queries[index] += tmp_matched_query
   
   # 位置拘束
   def get_restriction_query(self, terms, term_length, matched_index, restriction):
@@ -473,31 +472,75 @@ class Retriever:
 
 ### 3-3-0 home page
 
-
+<img src="./pics/3-3-0.png" style="zoom:25%;" />
 
 ### 3-3-1 无位置约束：
 
 1. word word 搜索：直接输入即可
 
-   
+   ```
+   输入：
+   1. 中国 强大
+   2. 世界 中国 第一
+   ```
+
+   <img src="./pics/3-3-1-1-1.png" style="zoom: 50%;" />
+
+   <img src="./pics/3-3-1-1-2.png" style="zoom:50%;" />
 
 2. word/phrase word/phrase搜索：`词语/词性`
 
-   
+  ```
+  输入：
+  1. 中国/ns 强大/a
+  2. 世界/ns 中国/ns 第一/a
+  ```
+  
+  <img src="./pics/3-3-1-2-1.png" style="zoom:50%;" />
+  
+  <img src="./pics/3-3-1-2-2.png" style="zoom:50%;" /> 
 
 ### 3-3-2 有位置约束：
 
 1. word word 搜索 + 位置约束：直接输入即可，在`restriction`输入2-5之间的数值
 
+   ```
+   输入：
+   1. 中国 强大 restriction=2
+   2. 中国 强大 restriction=5
+   ```
+
+   <img src="./pics/3-3-1-1-1.png" style="zoom:50%;" />
+
+   <img src="./pics/3-3-2-1-2.png" style="zoom:50%;" />
+
    
 
 2. word/phrase word/phrase搜索 + 位置约束：`词语/词性`，在`restriction`输入2-5之间的数值
 
-   
+   ```
+   输入：
+   1. 中国/ns 强大/a restriction=2
+   2. 中国/ns 强大/a restriction=5
+   ```
+
+   <img src="./pics/3-3-2-2-1.png" style="zoom:50%;" />
+
+<img src="./pics/3-3-2-2-2.png" style="zoom:50%;" />
 
 ### 3-3-3 前四种的混合：
 
 即搜索词中，有的词可以有phrase也可以没有，位置约束也是可加可以不加。
+
+```
+输入：
+1. 世界 中国/ns 第一 restriction=5
+2. 世界 中国/ns 第一 restriction=2
+```
+
+<img src="./pics/3-3-3-1.png" style="zoom:50%;" />
+
+<img src="./pics/3-3-3-2.png" style="zoom:50%;" />
 
 
 
