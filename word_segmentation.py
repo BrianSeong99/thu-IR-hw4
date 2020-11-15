@@ -2,6 +2,9 @@ from config import *
 import os
 import thulac
 
+'''
+	分词模块
+'''
 class SegProcessor:
   def __init__(self, segmentation_limit=LIMIT, training=False):
     self.training = training
@@ -16,6 +19,8 @@ class SegProcessor:
           continue
         with open(CORPUS_DIR + file_name, "r") as f:
           print("Segmenting File [", CORPUS_DIR+file_name, "]")
+
+          # 语料库是Sogou的情况下
           if "Sogou" in file_name:
             line_count = 0
             line = f.readline()
@@ -37,6 +42,8 @@ class SegProcessor:
                 f.close()
                 break
               line = f.readline()
+          
+          # 语料库不是Sogou的情况下
           else:
             line = f.readline()
             line_count = 0
