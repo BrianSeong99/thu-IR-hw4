@@ -40,17 +40,13 @@ class Indexer:
         fieldtype_context.setTokenized(True)
 
         fieldtype_phrase = FieldType()
-        # fieldtype_phrase.setIndexOptions(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS)
         fieldtype_phrase.setStored(True)
-        # fieldtype_phrase.setTokenized(True)
 
         processed_context, processed_phrase = self.process_line(line)
 
         doc = Document()
         doc.add(Field('context', processed_context, fieldtype_context))
         doc.add(Field('phrase', processed_phrase, fieldtype_phrase))
-
-        # print()
 
         writer.addDocument(doc)
 

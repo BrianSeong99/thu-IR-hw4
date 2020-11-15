@@ -43,10 +43,7 @@ class Retriever:
       else:
         queries.append(term)
         query_phrases.append('')
-      # else:
-      #   cutted = self.lac.cut(term, text=False)
-      #   for cutted_term in cutted:
-      #     phrase.append(cutted_term)
+    
     parsed_query = QueryParser("context", self.analyzer).parse(' '.join(queries))
     total_hits = self.searcher.search(parsed_query, MAX)
     result_contexts = []
@@ -63,7 +60,7 @@ class Retriever:
             flag = False
             break
       if flag:
-        result_contexts.append(''.join(terms))
+        result_contexts.append([' '.join(terms), hit.score])
     
     return result_contexts, parsed_query
 
@@ -74,7 +71,7 @@ class Retriever:
     for hit in total_hits.scoreDocs:
       doc = self.searcher.doc(hit.doc)
       context = doc.get('context')
-      result_contexts.append(context)
+      result_contexts.append([context, hit.score])
     
     return result_contexts
 
@@ -104,12 +101,10 @@ class Retriever:
     self.recovered_queries = []
     self.recovered_contexts = []
 
-    self.recovered_hits = []
-
     for context in contexts:
-      terms = context.split(' ')
+      terms = context[0].split(' ')
+      score = context[1]
       length = len(terms)
-      # self.recovered_hits.append(''.join(terms))
       for matched_index, term in enumerate(terms):
         if term in query_str:
           joined = ''.join(terms)
@@ -117,10 +112,6 @@ class Retriever:
             tmp_matched_query = self.get_restriction_query(terms, length, matched_index, restriction)
             self.recovered_queries.append(tmp_matched_query)
             self.recovered_contexts.append(joined)
-      
-    self.recovered_hits = list(set(self.recovered_hits))
-    if '' in self.recovered_hits:
-      self.recovered_hits.remove('')
       
   def get_restriction_query(self, terms, term_length, matched_index, restriction):
     sentence = terms[matched_index]
