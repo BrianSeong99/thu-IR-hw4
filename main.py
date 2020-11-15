@@ -47,7 +47,7 @@ if __name__ == '__main__':
       print()
       training = True
 
-   if opts.segmenting:
+   if opts.segmenting or training:
       print()
       print("==========SEGMENTATION==========")
       start = time.time()
@@ -57,7 +57,7 @@ if __name__ == '__main__':
       print("==========SEGMENTATION==========")
       print()
 
-   if opts.indexing:
+   if opts.indexing or training:
       print()
       print("==========INDEXING==========")
       start = time.time()
